@@ -1,0 +1,54 @@
+services:
+  db:
+    image: postgres:16
+    container_name: petstore-db
+    environment:
+      POSTGRES_DB: petstore
+      POSTGRES_USER: petuser
+      POSTGRES_PASSWORD: petpass
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U petuser -d petstore"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build:
+      context: ./backend
+    container_name: petstore-backend
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      APP_ENV: development
+      PORT: 8080
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: petstore
+      DB_USER: petuser
+      DB_PASSWORD: petpass
+      IMAGE_DIR: /app/media/pet-images
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./media:/app/media
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: petstore-frontend
+    depends_on:
+      - backend
+    environment:
+      VITE_GRAPHQL_URL: http://localhost:8080/query
+      VITE_CUSTOMER_AUTH_USERNAME: customer_happy
+      VITE_CUSTOMER_AUTH_PASSWORD: customer123
+    ports:
+      - "5173:5173"
+
+volumes:
+  postgres_data:

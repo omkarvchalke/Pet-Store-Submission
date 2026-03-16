@@ -1,0 +1,68 @@
+scalar Time
+
+enum Species {
+  CAT
+  DOG
+  BIRD
+}
+
+enum PetStatus {
+  AVAILABLE
+  SOLD
+}
+
+type Pet {
+  id: ID!
+  storeId: ID!
+  name: String!
+  species: Species!
+  age: Int!
+  pictureUrl: String!
+  description: String!
+  createdAt: Time!
+  status: PetStatus!
+  soldAt: Time
+}
+
+type Order {
+  id: ID!
+  customerId: ID!
+  storeId: ID!
+  purchasedAt: Time!
+  pets: [Pet!]!
+}
+
+type PurchasePetResult {
+  success: Boolean!
+  message: String!
+  pet: Pet
+}
+
+type CheckoutResult {
+  success: Boolean!
+  message: String!
+  order: Order
+  unavailablePetNames: [String!]!
+}
+
+type Query {
+  customerAvailablePets(storeSlug: String!): [Pet!]!
+  merchantUnsoldPets: [Pet!]!
+  merchantSoldPets(start: Time!, end: Time!): [Pet!]!
+}
+
+type Mutation {
+  merchantCreatePet(
+    name: String!
+    species: Species!
+    age: Int!
+    pictureBase64: String!
+    description: String!
+  ): Pet!
+
+  merchantRemovePet(petId: ID!): Boolean!
+
+  customerPurchasePet(petId: ID!): PurchasePetResult!
+
+  customerCheckoutCart(petIds: [ID!]!): CheckoutResult!
+}

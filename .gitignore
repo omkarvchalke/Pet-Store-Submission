@@ -1,0 +1,32 @@
+# macOS
+.DS_Store
+
+# env files
+.env
+.env.*
+!.env.example
+
+# logs
+*.log
+
+# frontend
+frontend/node_modules/
+frontend/dist/
+node_modules/
+dist/
+
+# backend build/temp
+backend/bin/
+backend/tmp/
+*.out
+
+# editor
+.vscode/
+.idea/
+
+# coverage
+coverage/
+*.coverprofile
+
+# archive outputs
+*.zip
